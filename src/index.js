@@ -41,9 +41,28 @@ class Game {
     }
     this.canvas.width = this.w;
     this.canvas.height = this.h;
+    this.reset();
   }
 
-  // 初始化, 资源加载之类的
+  /**
+   * 重置游戏参数, 例如积分
+   *
+   * @return {void}
+   */
+  reset() {}
+
+  /**
+   * 初始化并开始游戏
+   * @param {Array.Object} resources 游戏所需静态资源对象 key => value 格式， key 为资源名称，value为object，格式如下
+   * {
+   *   type: 'image', // audio, video, image
+   *   name: 'name', // 资源名称，预加载后会存入 this.R 方便随时获取
+   *   url: 'https://urladress/', // 资源地址
+   *   map: 'https://urladress/' // 图片资源对应的定位信息文件, 仅 type = image 有效
+   * }
+   *
+   * @return {void}
+   */
   async init(resources) {
     // 约束画布的宽高为屏幕的宽高
     await this.loadResources(resources);
@@ -188,8 +207,9 @@ class Game {
           this.R[name] = img;
           if (map) {
             fetch(map)
-              .then(res => {
-                this.parseImageMap(img, res.text());
+              .then(res => res.text())
+              .then(text => {
+                this.parseImageMap(img, text);
                 count += 1;
                 this.progress(((count * 100) / length) | 0);
                 if (count === length) resolve();
