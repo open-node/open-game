@@ -21,6 +21,5 @@ coverage
 coverage/*
 demo/*
 index.html
-src/*
 src-es5/*
 assets/*
