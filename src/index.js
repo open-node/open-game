@@ -4,12 +4,13 @@ const Scene = require("./scene");
 /**
  * Game 类
  * @class
- * @param {Object} convas DOM对象，或者node.js 下 require('canvas').createCanvas()
- * @param {Class} Image 图片构造函数，浏览器下为 window.Image, node.js 下为 require('canvas').Image
+ *
+ * @param {Object} canvas DOM对象，或者node.js 下 require('canvas').createCanvas()
+ * @param {Function} Image 图片构造函数，浏览器下为 window.Image, node.js 下为 require('canvas').Image
  * @param {Number} width 期望的画布宽度，浏览器下全拼为 document.documentElement.clientWidth
  * @param {Number} height 期望的画布高度，浏览器下全拼为 document.documentElement.clientHeight
- * @param {Array.Number} [widthRange] 画布宽度取值范围，不设置则宽度严格等于 width
- * @param {Array.Number} [heightRange] 画布高度取值范围，不设置则宽度严格等于 heigth
+ * @param {[Number]} [widthRange] 画布宽度取值范围，不设置则宽度严格等于 width
+ * @param {[Number]} [heightRange] 画布高度取值范围，不设置则宽度严格等于 heigth
  */
 class Game {
   /** Create a game instance */

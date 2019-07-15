@@ -696,7 +696,7 @@
 
   <p>Game 类</p>
 
-    <div class='pre p1 fill-light mt0'>new Game(canvas: any, Image: Class, width: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>, height: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>, widthRange: Array.Number?, heightRange: Array.Number?, convas: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</div>
+    <div class='pre p1 fill-light mt0'>new Game(canvas: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>, Image: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>, width: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>, height: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>, widthRange: [<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>]?, heightRange: [<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>]?)</div>
   
   
 
@@ -713,15 +713,16 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>canvas</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>canvas</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
+	    DOM对象，或者node.js 下 require('canvas').createCanvas()
+
           </div>
           
         </div>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>Image</span> <code class='quiet'>(Class)</code>
+            <span class='code bold'>Image</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">Function</a>)</code>
 	    图片构造函数，浏览器下为 window.Image, node.js 下为 require('canvas').Image
 
           </div>
@@ -748,7 +749,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>widthRange</span> <code class='quiet'>(Array.Number?)</code>
+            <span class='code bold'>widthRange</span> <code class='quiet'>([<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>]?)</code>
 	    画布宽度取值范围，不设置则宽度严格等于 width
 
           </div>
@@ -757,17 +758,8 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>heightRange</span> <code class='quiet'>(Array.Number?)</code>
+            <span class='code bold'>heightRange</span> <code class='quiet'>([<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>]?)</code>
 	    画布高度取值范围，不设置则宽度严格等于 heigth
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>convas</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</code>
-	    DOM对象，或者node.js 下 require('canvas').createCanvas()
 
           </div>
           
