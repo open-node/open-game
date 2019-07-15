@@ -1,0 +1,28 @@
+{
+  "name": "open-game",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:browser": "browserify src/index.js -s Game > browser.js",
+    "build:node": "browserify src/index.js --node -s Game > index.js",
+    "build": "npm run build:browser && npm run build:node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/open-node/open-game.git"
+  },
+  "keywords": [
+    "canvas",
+    "game"
+  ],
+  "author": "Redstone Zhao",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^16.3.0"
+  },
+  "bugs": {
+    "url": "https://github.com/open-node/open-game/issues"
+  },
+  "homepage": "https://github.com/open-node/open-game#readme"
+}
