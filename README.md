@@ -110,13 +110,12 @@ Game 类
 
 ### Parameters
 
--   `canvas`  
--   `Image` **Class** 图片构造函数，浏览器下为 window.Image, node.js 下为 require('canvas').Image
--   `width` **[Number][36]** 期望的画布宽度，浏览器下全拼为 document.documentElement.clientWidth
--   `height` **[Number][36]** 期望的画布高度，浏览器下全拼为 document.documentElement.clientHeight
--   `widthRange` **Array.Number?** 画布宽度取值范围，不设置则宽度严格等于 width
--   `heightRange` **Array.Number?** 画布高度取值范围，不设置则宽度严格等于 heigth
--   `convas` **[Object][37]** DOM对象，或者node.js 下 require('canvas').createCanvas()
+-   `canvas` **[Object][36]** DOM对象，或者node.js 下 require('canvas').createCanvas()
+-   `Image` **[Function][37]** 图片构造函数，浏览器下为 window.Image, node.js 下为 require('canvas').Image
+-   `width` **[Number][38]** 期望的画布宽度，浏览器下全拼为 document.documentElement.clientWidth
+-   `height` **[Number][38]** 期望的画布高度，浏览器下全拼为 document.documentElement.clientHeight
+-   `widthRange` **\[[Number][38]]?** 画布宽度取值范围，不设置则宽度严格等于 width
+-   `heightRange` **\[[Number][38]]?** 画布高度取值范围，不设置则宽度严格等于 heigth
 
 ### reset
 
@@ -134,8 +133,8 @@ Returns **void**
     {
       type: 'image', // audio, video, image
       name: 'name', // 资源名称，预加载后会存入 this.R 方便随时获取
-      url: '[https://urladress/'][38], // 资源地址
-      map: '[https://urladress/][39]' // 图片资源对应的定位信息文件, 仅 type = image 有效
+      url: '[https://urladress/'][39], // 资源地址
+      map: '[https://urladress/][40]' // 图片资源对应的定位信息文件, 仅 type = image 有效
     }
 
 Returns **void** 
@@ -161,8 +160,8 @@ Returns **void**
     {
       type: 'image', // audio, video, image
       name: 'name', // 资源名称，预加载后会存入 this.R 方便随时获取
-      url: '[https://urladress/'][38], // 资源地址
-      map: '[https://urladress/][39]' // 图片资源对应的定位信息文件, 仅 type = image 有效
+      url: '[https://urladress/'][39], // 资源地址
+      map: '[https://urladress/][40]' // 图片资源对应的定位信息文件, 仅 type = image 有效
     }
 
 Returns **void** 
@@ -173,8 +172,8 @@ Returns **void**
 
 #### Parameters
 
--   `name` **[string][40]** 图片名称
--   `y` **[number][36]** 在画布上的y坐标
+-   `name` **[string][41]** 图片名称
+-   `y` **[number][38]** 在画布上的y坐标
 
 Returns **void** 
 
@@ -184,9 +183,9 @@ Returns **void**
 
 #### Parameters
 
--   `name` **[string][40]** 图片名称
--   `x` **[number][36]** 在画布上的x坐标
--   `y` **[number][36]** 在画布上的y坐标
+-   `name` **[string][41]** 图片名称
+-   `x` **[number][38]** 在画布上的x坐标
+-   `y` **[number][38]** 在画布上的y坐标
 
 Returns **void** 
 
@@ -196,8 +195,8 @@ Returns **void**
 
 #### Parameters
 
--   `frames` **[number][36]** 多少帧之后
--   `handler` **[function][41]** 执行的事件函数
+-   `frames` **[number][38]** 多少帧之后
+-   `handler` **[function][37]** 执行的事件函数
 
 Returns **void** 
 
@@ -311,16 +310,16 @@ Returns **void**
 
 [35]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[36]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[36]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
-[37]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[37]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[38]: https://urladress/'
+[38]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[39]: https://urladress/
+[39]: https://urladress/'
 
-[40]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[40]: https://urladress/
 
-[41]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[41]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
 [42]: #scene
