@@ -1,8 +1,13 @@
 {
   "name": "open-game",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "",
   "main": "./src/index.js",
+  "scripts": {
+    "readme": "d=`head -n 9 README.md` && (echo \"$d\n\n\n\" && documentation build src/** -f md) > README.md",
+    "docs": "documentation build src/** -f html -o ./docs",
+    "release": "npm run readme && npm run docs && npm publish --registry=https://registry.npmjs.org"
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/open-node/open-game.git"

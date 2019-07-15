@@ -3,17 +3,16 @@ const Scene = require("./scene");
 
 /**
  * Game 类
- * @author Redstone Zhao
  * @class
- * @param {dom} convas dom 对象，或者node.js 下 require('canvas').createCanvas()
+ * @param {Object} convas DOM对象，或者node.js 下 require('canvas').createCanvas()
  * @param {Class} Image 图片构造函数，浏览器下为 window.Image, node.js 下为 require('canvas').Image
  * @param {Number} width 期望的画布宽度，浏览器下全拼为 document.documentElement.clientWidth
  * @param {Number} height 期望的画布高度，浏览器下全拼为 document.documentElement.clientHeight
  * @param {Array.Number} [widthRange] 画布宽度取值范围，不设置则宽度严格等于 width
  * @param {Array.Number} [heightRange] 画布高度取值范围，不设置则宽度严格等于 heigth
- * @return {List} Instance
  */
 class Game {
+  /** Create a game instance */
   constructor(canvas, Image, width, height, widthRange, heightRange) {
     this.env = "development"; // 控制游戏是什么模式
     this.fno = 0; // 程序主帧
