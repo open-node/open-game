@@ -1,22 +1,55 @@
 const Actor = require("./actor");
 const Scene = require("./scene");
 
-const mockfetch = url => {
-  /* eslint-disable global-require */
-  const fs = require("fs");
-  /* eslint-enable global-require */
-  return Promise.resolve({
-    text() {
-      return Promise.resolve(fs.readFileSync(url).toString());
-    }
-  });
+// 获取执行环境，wx, browser，node
+const env = (() => {
+  if (typeof window === "object") return "browser";
+  if (typeof wx === "object") return "wx";
+  if (typeof process === "object") return "node";
+  throw Error("未知环境");
+})();
+
+/* eslint-disable no-undef */
+const fetchFns = {
+  wx(url) {
+    return Promise.resolve({
+      text() {
+        return new Promise((success, fail) => {
+          wx.request({ url, success, fail });
+        });
+      }
+    });
+  },
+  browser(url) {
+    return window.fetch(url);
+  },
+  node(url) {
+    /* eslint-disable global-require */
+    const fs = require("fs");
+    /* eslint-enable global-require */
+    return Promise.resolve({
+      text() {
+        return Promise.resolve(fs.readFileSync(url).toString());
+      }
+    });
+  }
 };
-const mockRequestAnimationFrame = callback => {
-  setTimeout(callback, 17);
+
+const requestAnimationFrameFns = {
+  wx(callback) {
+    return wx.requestAnimationFrame(callback);
+  },
+  browser(callback) {
+    return window.requestAnimationFrame(callback);
+  },
+  node(callback) {
+    return setTimeout(callback, 17);
+  }
 };
-const fetch = this.fetch || mockfetch;
-const requestAnimationFrame =
-  this.requestAnimationFrame || mockRequestAnimationFrame;
+/* eslint-enable no-undef */
+
+const fetch = fetchFns[env];
+const requestAnimationFrame = requestAnimationFrameFns[env];
 
 /**
  * Game 类
@@ -260,6 +293,24 @@ class Game {
     if (!args) throw Error("图片不存在");
     args[5] = (this.w - args[3]) >> 1;
     args[6] = y;
+    this.ctx.drawImage(...args);
+  }
+
+  /**
+   * 绘制图片获取图片切片
+   * @param {string} name 图片名称
+   * @param {number} x 在画布上的x坐标
+   * @param {number} y 在画布上的y坐标
+   *
+   * @return {void}
+   */
+  drawImageByNameFullScreen(name) {
+    const args = this.drawImgs[name];
+    if (!args) throw Error("图片不存在");
+    args[5] = 0;
+    args[6] = 0;
+    args[7] = this.w;
+    args[8] = this.h;
     this.ctx.drawImage(...args);
   }
 
