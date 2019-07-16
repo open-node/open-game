@@ -1,6 +1,23 @@
 const Actor = require("./actor");
 const Scene = require("./scene");
 
+const mockfetch = url => {
+  /* eslint-disable global-require */
+  const fs = require("fs");
+  /* eslint-enable global-require */
+  return Promise.resolve({
+    text() {
+      return Promise.resolve(fs.readFileSync(url).toString());
+    }
+  });
+};
+const mockRequestAnimationFrame = callback => {
+  setTimeout(callback, 17);
+};
+const fetch = this.fetch || mockfetch;
+const requestAnimationFrame =
+  this.requestAnimationFrame || mockRequestAnimationFrame;
+
 /**
  * Game 类
  * @class
@@ -15,6 +32,7 @@ const Scene = require("./scene");
 class Game {
   /** Create a game instance */
   constructor(canvas, Image, width, height, widthRange, heightRange) {
+    this.debuggerInfoColor = "#000000";
     this.env = "development"; // 控制游戏是什么模式
     this.fno = 0; // 程序主帧
     this.isPause = false; // 游戏是否暂停
@@ -87,6 +105,7 @@ class Game {
 
   // 开始事件监听
   listenEvent() {
+    if (typeof document === "undefined" && typeof wx === "undefined") return;
     const eventName = "ontouchstart" in document ? "ontouchstart" : "onclick";
     this.canvas[eventName] = this.clickHandler.bind(this);
   }
@@ -120,20 +139,19 @@ class Game {
     this.scene.update();
     // 场景渲染
     this.scene.render();
+    // 输出调试信息
+    if (this.env === "development") this.debugg();
     // 事件函数执行
     const handlers = this.callbacks.get(this.fno);
     if (handlers) {
       for (const handler of handlers) handler();
       this.callbacks.delete(this.fno);
     }
-
-    // 输出调试信息
-    if (this.env === "development") this.debugg();
   }
 
   debugg() {
     this.ctx.font = "20px serif";
-    this.ctx.fillStyle = "black";
+    this.ctx.fillStyle = this.debuggerInfoColor;
     this.ctx.fillText(`Fno: ${this.fno}`, 5, 20);
     this.ctx.fillText(`Scene: ${this.scene.name}`, 5, 40);
   }
