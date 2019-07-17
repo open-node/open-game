@@ -58,7 +58,43 @@ class Scene {
   }
 
   /**
-   * 点击事件
+   * 鼠标按下事件
+   *
+   * @return {void}
+   */
+  mousedown(x, y) {
+    for (const key of this.actors) {
+      const actor = this.game.actors[key];
+      if (actor.mousedown) actor.mousedown(x, y);
+    }
+  }
+
+  /**
+   * 鼠标松开事件
+   *
+   * @return {void}
+   */
+  mouseup(x, y) {
+    for (const key of this.actors) {
+      const actor = this.game.actors[key];
+      if (actor.mouseup) actor.mouseup(x, y);
+    }
+  }
+
+  /**
+   * 鼠标移动事件
+   *
+   * @return {void}
+   */
+  mousemove(x, y) {
+    for (const key of this.actors) {
+      const actor = this.game.actors[key];
+      if (actor.mousemove) actor.mousemove(x, y);
+    }
+  }
+
+  /**
+   * 鼠标点击事件
    *
    * @return {void}
    */

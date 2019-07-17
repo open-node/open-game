@@ -92,6 +92,7 @@ class Game {
     }
     this.canvas.width = this.w;
     this.canvas.height = this.h;
+    this.eventListeners = [["ontouchstart", "onclick", "click"]];
     this.reset();
   }
 
@@ -128,19 +129,25 @@ class Game {
   // 创建场景
   createScenes() {}
 
-  // 点击、轻触事件
-  clickHandler(event) {
+  // 事件执行以及传递
+  eventHandler(fnName, event) {
     const { changedTouches, clientX, clientY } = event;
     const x = (changedTouches && changedTouches[0].clientX) || clientX;
     const y = (changedTouches && changedTouches[0].clientY) || clientY;
-    this.scene.click(x, y);
+    if (this.scene[fnName]) this.scene[fnName](x, y);
   }
 
-  // 开始事件监听
-  listenEvent() {
+  // 添加事件监听
+  listenEvent(mobile, pc, fnName) {
     if (typeof document === "undefined" && typeof wx === "undefined") return;
-    const eventName = "ontouchstart" in document ? "ontouchstart" : "onclick";
-    this.canvas[eventName] = this.clickHandler.bind(this);
+    const eventName = mobile in document ? mobile : pc;
+    const listener = this.eventHandler.bind(this, fnName);
+    this.canvas[eventName] = listener;
+  }
+
+  // 移除事件监听
+  removeListenEvent(name) {
+    this.canvas[name] = null;
   }
 
   // 开始游戏，游戏资源全部加载完毕后
@@ -155,7 +162,11 @@ class Game {
     this.enter("start");
 
     // 事件监听
-    this.listenEvent();
+    if (Array.isArray(this.eventListeners) && this.eventListeners.length) {
+      for (const args of this.eventListeners) {
+        this.listenEvent(...args);
+      }
+    }
     this.draw = this.draw.bind(this);
 
     // 游戏主循环启动
