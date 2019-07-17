@@ -221,15 +221,14 @@ class Game {
    * @return {void}
    */
   progress(percent) {
-    this.ctx.save();
-    this.ctx.clearRect(0, 0, this.w, this.h);
-    this.ctx.textAlign = "center";
-    this.ctx.font = "14px Arial";
-    this.ctx.fillText(
-      `Loading resources ${percent} / 100...`,
-      this.w >> 1,
-      150
-    );
+    const { ctx } = this;
+    ctx.save();
+    ctx.clearRect(0, 0, this.w, this.h);
+    ctx.strokeStyle = "rgba(255, 55, 20, 1)";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(30, 150, this.w - 60, 20);
+    ctx.fillStyle = "rgba(30, 255, 10, 1)";
+    ctx.fillRect(34, 154, Math.max(10, ((this.w - 68) * percent) / 100), 12);
     this.ctx.restore();
   }
 
