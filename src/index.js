@@ -1,10 +1,12 @@
 const Actor = require("./actor");
 const Scene = require("./scene");
 
+const isURL = /^https?:\/\//i;
+
 // 获取执行环境，wx, browser，node
 const env = (() => {
-  if (typeof window === "object") return "browser";
   if (typeof wx === "object") return "wx";
+  if (typeof window === "object") return "browser";
   if (typeof process === "object") return "node";
   throw Error("未知环境");
 })();
@@ -15,7 +17,23 @@ const fetchFns = {
     return Promise.resolve({
       text() {
         return new Promise((success, fail) => {
-          wx.request({ url, success, fail });
+          if (isURL.test(url)) {
+            wx.request({ url, success, fail });
+          } else {
+            try {
+              const fs = wx.getFileSystemManager();
+              const content = fs.readFileSync(url);
+              if (content instanceof ArrayBuffer) {
+                const u8 = new Uint8Array(content);
+                const text = String.fromCharCode(...u8);
+                success(decodeURIComponent(text));
+              } else {
+                success(content);
+              }
+            } catch (e) {
+              fail(e);
+            }
+          }
         });
       }
     });
@@ -37,7 +55,7 @@ const fetchFns = {
 
 const requestAnimationFrameFns = {
   wx(callback) {
-    return wx.requestAnimationFrame(callback);
+    return window.requestAnimationFrame(callback);
   },
   browser(callback) {
     return window.requestAnimationFrame(callback);
