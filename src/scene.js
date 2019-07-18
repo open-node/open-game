@@ -58,50 +58,20 @@ class Scene {
   }
 
   /**
-   * 鼠标按下事件
+   * 鼠标事件执行分发
+   * eventHandler
+   *
+   * @param {string} name 事件名称
+   * @param {Number} x 鼠标x坐标值
+   * @param {Number} y 鼠标y坐标值
    *
    * @return {void}
    */
-  mousedown(x, y) {
+  eventHandler(name, x, y) {
     for (const key of this.actors) {
       const actor = this.game.actors[key];
-      if (actor.mousedown) actor.mousedown(x, y);
-    }
-  }
-
-  /**
-   * 鼠标松开事件
-   *
-   * @return {void}
-   */
-  mouseup(x, y) {
-    for (const key of this.actors) {
-      const actor = this.game.actors[key];
-      if (actor.mouseup) actor.mouseup(x, y);
-    }
-  }
-
-  /**
-   * 鼠标移动事件
-   *
-   * @return {void}
-   */
-  mousemove(x, y) {
-    for (const key of this.actors) {
-      const actor = this.game.actors[key];
-      if (actor.mousemove) actor.mousemove(x, y);
-    }
-  }
-
-  /**
-   * 鼠标点击事件
-   *
-   * @return {void}
-   */
-  click(x, y) {
-    for (const key of this.actors) {
-      const actor = this.game.actors[key];
-      if (actor.click) actor.click(x, y);
+      if (!actor) continue;
+      if (actor[name]) actor[name](x, y);
     }
   }
 }

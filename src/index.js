@@ -3,12 +3,33 @@ const Scene = require("./scene");
 
 const isURL = /^https?:\/\//i;
 
+// 微信event映射关系
+const eventsMap = {
+  mobile: {
+    onmousedown: "ontouchstart",
+    onmouseup: "ontouchend",
+    onmousemove: "ontouchmove"
+  },
+  wx: {
+    onmousedown: "onTouchStart",
+    onmouseup: "onTouchEnd",
+    onmousemove: "onTouchMove"
+  }
+};
+
 // 获取执行环境，wx, browser，node
 const env = (() => {
   if (typeof wx === "object") return "wx";
   if (typeof window === "object") return "browser";
   if (typeof process === "object") return "node";
   throw Error("未知环境");
+})();
+
+// 获取平台类型 pc, mobile, unknown
+const isMobile = (() => {
+  if (env === "node") return "unknown";
+  if (typeof wx !== "undefined") return true;
+  return typeof document !== "undefined" && "ontouchstart" in document;
 })();
 
 /* eslint-disable no-undef */
@@ -55,10 +76,10 @@ const fetchFns = {
 
 const requestAnimationFrameFns = {
   wx(callback) {
-    return window.requestAnimationFrame(callback);
+    return requestAnimationFrame(callback);
   },
   browser(callback) {
-    return window.requestAnimationFrame(callback);
+    return requestAnimationFrame(callback);
   },
   node(callback) {
     return setTimeout(callback, 17);
@@ -67,7 +88,7 @@ const requestAnimationFrameFns = {
 /* eslint-enable no-undef */
 
 const fetch = fetchFns[env];
-const requestAnimationFrame = requestAnimationFrameFns[env];
+const requestAnimationFrameFn = requestAnimationFrameFns[env];
 
 /**
  * Game 类
@@ -85,6 +106,10 @@ class Game {
   constructor(canvas, Image, width, height, widthRange, heightRange) {
     this.debuggerInfoColor = "#000000";
     this.env = "development"; // 控制游戏是什么模式
+    this.platform = {
+      env,
+      isMobile
+    };
     this.fno = 0; // 程序主帧
     this.isPause = false; // 游戏是否暂停
     this.Image = Image; // 图片构造函数，用来加载资源
@@ -98,6 +123,7 @@ class Game {
     this.scenes = {}; // 场景管理器
     this.actors = {}; // 角色管理器
     this.callbacks = new Map(); // 帧事件管理器
+    this.wxEvents = {}; // 记录微信event事件函数，因为off的时候需要，否则取消不掉
     if (widthRange) {
       this.w = Math.max(widthRange[0], Math.min(widthRange[1], width));
     } else {
@@ -110,7 +136,7 @@ class Game {
     }
     this.canvas.width = this.w;
     this.canvas.height = this.h;
-    this.eventListeners = [["ontouchstart", "onclick", "click"]];
+    this.eventListeners = [["onclick", "click"]];
     this.reset();
   }
 
@@ -152,20 +178,33 @@ class Game {
     const { changedTouches, clientX, clientY } = event;
     const x = (changedTouches && changedTouches[0].clientX) || clientX;
     const y = (changedTouches && changedTouches[0].clientY) || clientY;
-    if (this.scene[fnName]) this.scene[fnName](x, y);
+    if (this.scene.eventHandler) this.scene.eventHandler(fnName, x, y);
   }
 
   // 添加事件监听
-  listenEvent(mobile, pc, fnName) {
-    if (typeof document === "undefined" && typeof wx === "undefined") return;
-    const eventName = mobile in document ? mobile : pc;
+  listenEvent(evt, fnName) {
+    if (env === "node") return;
     const listener = this.eventHandler.bind(this, fnName);
-    this.canvas[eventName] = listener;
+    if (env === "wx") {
+      const wxEvt = eventsMap.wx[evt];
+      wx[wxEvt](listener);
+      this.canvas[wxEvt] = listener;
+    } else {
+      if (isMobile) evt = eventsMap.mobile[evt];
+      this.canvas[evt] = listener;
+    }
   }
 
   // 移除事件监听
-  removeListenEvent(name) {
-    this.canvas[name] = null;
+  removeListenEvent(evt) {
+    if (env === "wx") {
+      const wxEvt = eventsMap.wx[evt];
+      wx[`off${wxEvt.slice(2)}`](this.canvas[wxEvt]);
+      this.canvas[wxEvt] = null;
+    } else {
+      if (isMobile) evt = eventsMap.mobile[evt];
+      this.canvas[evt] = null;
+    }
   }
 
   // 开始游戏，游戏资源全部加载完毕后
@@ -188,11 +227,11 @@ class Game {
     this.draw = this.draw.bind(this);
 
     // 游戏主循环启动
-    requestAnimationFrame(this.draw);
+    requestAnimationFrameFn(this.draw);
   }
 
   draw() {
-    requestAnimationFrame(this.draw);
+    requestAnimationFrameFn(this.draw);
     if (this.isPause) return;
     this.fno += 1;
     // 擦除
@@ -244,6 +283,22 @@ class Game {
   }
 
   /**
+   * 输出错误信息, 在开发模式下
+   * @param {string} msg 错误信息
+   *
+   * @return {void}
+   */
+  showMessage(msg) {
+    this.ctx.save();
+    this.ctx.fillStyle = "#ffffff";
+    this.ctx.fillRect(0, this.h - 40, this.w, 40);
+    this.ctx.fillStyle = "orange";
+    this.ctx.font = "20px 宋体";
+    this.ctx.fillText(msg, 0, this.h - 20);
+    this.ctx.restore();
+  }
+
+  /**
    * 显示资源加载 loading 效果
    * @param {Array.URL} resources 游戏所需静态资源url列表
    *
@@ -278,7 +333,7 @@ class Game {
     let count = 0; // 记录已完成的数量
     this.progress(0); // 显示 loading 效果
     return new Promise((resolve, reject) => {
-      for (const { name, type, url, map } of resources) {
+      for (const { name, type, url, map, scale } of resources) {
         // TODO 暂时只支持图片类型的预加载
         if (type !== "image") continue;
         const img = new this.Image();
@@ -296,14 +351,31 @@ class Game {
               .catch(reject);
           } else {
             count += 1;
-            const { width: w, height: h } = img;
+            let { width: w, height: h } = img;
+            if (scale) {
+              w *= scale;
+              h *= scale;
+            }
             this.progress(((count * 100) / length) | 0);
             this.imgMaps[name] = { x: 0, y: 0, w, h };
-            this.drawImgs[name] = [img, 0, 0, w, h, 0, 0, w, h];
+            this.drawImgs[name] = [
+              img,
+              0,
+              0,
+              img.width,
+              img.height,
+              0,
+              0,
+              w,
+              h
+            ];
             if (count === length) resolve();
           }
         };
-        img.onerror = reject;
+        img.onerror = e => {
+          console.error(e);
+          reject(e);
+        };
         img.src = url;
       }
     });
@@ -316,11 +388,13 @@ class Game {
    *
    * @return {void}
    */
-  drawImageAlignCenterByName(name, y) {
+  drawImageAlignCenterByName(name, y, w, h) {
     const args = this.drawImgs[name];
     if (!args) throw Error("图片不存在");
-    args[5] = (this.w - args[3]) >> 1;
+    args[5] = (this.w - args[7]) >> 1;
     args[6] = y;
+    if (w) args[7] = w;
+    if (h) args[8] = h;
     this.ctx.drawImage(...args);
   }
 
@@ -350,11 +424,13 @@ class Game {
    *
    * @return {void}
    */
-  drawImageByName(name, x, y) {
+  drawImageByName(name, x, y, w, h) {
     const args = this.drawImgs[name];
     if (!args) throw Error("图片不存在");
     args[5] = x;
     args[6] = y;
+    if (w) args[7] = w;
+    if (h) args[8] = h;
     this.ctx.drawImage(...args);
   }
 
