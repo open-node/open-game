@@ -288,13 +288,21 @@ class Game {
    *
    * @return {void}
    */
-  showMessage(msg) {
+  showMessage(msg, stack) {
     this.ctx.save();
     this.ctx.fillStyle = "#ffffff";
-    this.ctx.fillRect(0, this.h - 40, this.w, 40);
+    this.ctx.fillRect(0, 0, this.w, this.h);
     this.ctx.fillStyle = "orange";
-    this.ctx.font = "20px 宋体";
-    this.ctx.fillText(msg, 0, this.h - 20);
+    this.ctx.font = "12px 宋体";
+    const x = 10;
+    let y = 16;
+    this.ctx.fillText(msg, x, y);
+    if (stack) {
+      for (const line of stack.split("\n")) {
+        y += 16;
+        this.ctx.fillText(line, x, y);
+      }
+    }
     this.ctx.restore();
   }
 
@@ -307,12 +315,16 @@ class Game {
   progress(percent) {
     const { ctx } = this;
     ctx.save();
-    ctx.clearRect(0, 0, this.w, this.h);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, this.w, this.h);
     ctx.strokeStyle = "rgba(255, 55, 20, 1)";
     ctx.lineWidth = 4;
     ctx.strokeRect(30, 150, this.w - 60, 20);
     ctx.fillStyle = "rgba(30, 255, 10, 1)";
     ctx.fillRect(34, 154, Math.max(10, ((this.w - 68) * percent) / 100), 12);
+    ctx.textAlign = "center";
+    ctx.font = "15px Arial";
+    ctx.fillText(`The resources loading... ${percent} %`, this.w / 2, 192);
     this.ctx.restore();
   }
 
@@ -444,7 +456,7 @@ class Game {
   registCallback(frames, handler) {
     const fno = this.fno + frames;
     const handlers = this.callbacks.get(fno) || [];
-    if (!handler.length) this.callbacks.set(fno, handlers);
+    if (!handlers.length) this.callbacks.set(fno, handlers);
     handlers.push(handler);
   }
 }
